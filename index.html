@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>High-Risk Neonates | Interactive Clinical Guide</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', 'Cairo', sans-serif;
+      scroll-behavior: smooth;
+    }
+    html[dir="rtl"] body {
+      font-family: 'Cairo', 'Inter', sans-serif;
+    }
+    .tab-active {
+      background-color: #0284c7;
+      color: white;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+    }
+    input[type="range"] {
+      accent-color: #0284c7;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- Top Navigation & Language Toggle -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-sky-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+          HRN
+        </div>
+        <div>
+          <h1 class="font-bold text-slate-900 text-base sm:text-lg leading-tight" data-i18n="appTitle">High-Risk Neonates</h1>
+          <p class="text-xs text-slate-500" data-i18n="appSubtitle">Interactive Clinical & Nursing Lecture</p>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+        <a href="#overview" class="hover:text-sky-600 transition" data-i18n="navOverview">Overview</a>
+        <a href="#classifier" class="hover:text-sky-600 transition" data-i18n="navClassifier">Classifier</a>
+        <a href="#assessment" class="hover:text-sky-600 transition" data-i18n="navAssessment">Assessment</a>
+        <a href="#nursing" class="hover:text-sky-600 transition" data-i18n="navNursing">Nursing Care</a>
+        <a href="#conditions" class="hover:text-sky-600 transition" data-i18n="navConditions">Conditions</a>
+        <a href="#quiz" class="hover:text-sky-600 transition" data-i18n="navQuiz">Quiz</a>
+      </nav>
+
+      <!-- Language Switcher Button -->
+      <button id="langToggleBtn" onclick="toggleLanguage()" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-sky-600 text-white text-sm font-semibold transition shadow-sm cursor-pointer">
+        <span>🌐</span>
+        <span id="langBtnText">العربية</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 flex-1">
+
+    <!-- 1. OVERVIEW & PREDISPOSING FACTORS -->
+    <section id="overview" class="space-y-6">
+      <div class="bg-gradient-to-r from-sky-700 to-indigo-800 rounded-2xl p-6 sm:p-8 text-white shadow-lg">
+        <span class="inline-block px-3 py-1 rounded-full bg-white/20 text-xs font-semibold tracking-wider uppercase mb-3" data-i18n="OverviewBadge">Module 1 • Fundamentals</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold mb-3" data-i18n="defTitle">Definition of High-Risk Neonate</h2>
+        <p class="text-sky-100 leading-relaxed text-sm sm:text-base mb-4" data-i18n="defText1">
+          1. A newborn (regardless of gestational age or birth weight) who has a greater than average chance of morbidity or mortality because of threats to life and health that occur during the prenatal, perinatal, and postnatal periods.
+        </p>
+        <p class="text-sky-100 leading-relaxed text-sm sm:text-base font-medium bg-white/10 p-3 rounded-xl border border-white/15" data-i18n="defText2">
+          2. Any neonate exposed to any condition that makes their life in danger.
+        </p>
+      </div>
+
+      <!-- Factors & Gestational Age Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Predisposing Factors -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-slate-900" data-i18n="factorsTitle">Predisposing Factors</h3>
+            <div class="inline-flex rounded-lg bg-slate-100 p-1">
+              <button onclick="switchFactor('maternal')" id="btnFactorMaternal" class="px-3 py-1.5 rounded-md text-xs font-semibold tab-active transition" data-i18n="maternalTab">Maternal</button>
+              <button onclick="switchFactor('neonatal')" id="btnFactorNeonatal" class="px-3 py-1.5 rounded-md text-xs font-semibold text-slate-600 transition" data-i18n="neonatalTab">Neonatal</button>
+            </div>
+          </div>
+          <ul id="factorsList" class="space-y-3 text-sm text-slate-700"></ul>
+        </div>
+
+        <!-- Gestational Age Determination -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-900 mb-2" data-i18n="gaTitle">Gestational Age (GA)</h3>
+          <p class="text-xs sm:text-sm text-slate-600 mb-4 bg-sky-50 border border-sky-100 p-3 rounded-xl" data-i18n="gaDef">
+            <strong>Definition:</strong> The course of time from day one of the menstrual cycle until birth.
+          </p>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3" data-i18n="gaMethodsTitle">5 Methods of Determination:</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-sm">
+            <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 font-medium" data-i18n="gaM1">1. Physical & neurological exam</div>
+            <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 font-medium" data-i18n="gaM2">2. Last Menstrual Period (L.M.P)</div>
+            <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 font-medium" data-i18n="gaM3">3. Obstetric history</div>
+            <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 font-medium" data-i18n="gaM4">4. Laboratory tests</div>
+            <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 font-medium sm:col-span-2" data-i18n="gaM5">5. Fetal ultrasonic scanning</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. INTERACTIVE NEWBORN CLASSIFIER -->
+    <section id="classifier" class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider text-sky-600" data-i18n="calcBadge">Interactive Clinical Tool</span>
+        <h2 class="text-2xl font-bold text-slate-900 mt-1" data-i18n="calcTitle">Newborn Classification Simulator</h2>
+        <p class="text-sm text-slate-500" data-i18n="calcDesc">Adjust the sliders to classify the neonate according to gestational age, birth weight, and intrauterine growth chart percentile.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Sliders -->
+        <div class="lg:col-span-2 space-y-5 bg-slate-50 p-5 rounded-xl border border-slate-200">
+          <div>
+            <div class="flex justify-between text-sm font-semibold mb-1">
+              <label data-i18n="sliderGA">Gestational Age (Weeks)</label>
+              <span id="gaValDisplay" class="text-sky-700 font-bold">36 wks</span>
+            </div>
+            <input type="range" id="gaSlider" min="24" max="44" value="36" oninput="updateClassifier()" class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer">
+            <div class="flex justify-between text-xs text-slate-400 mt-1">
+              <span>24w</span>
+              <span data-i18n="termRangeLabel">Term: 38–42w</span>
+              <span>44w</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-sm font-semibold mb-1">
+              <label data-i18n="sliderWeight">Birth Weight (Grams)</label>
+              <span id="wtValDisplay" class="text-sky-700 font-bold">1800 gm</span>
+            </div>
+            <input type="range" id="wtSlider" min="500" max="4500" step="50" value="1800" oninput="updateClassifier()" class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer">
+            <div class="flex justify-between text-xs text-slate-400 mt-1">
+              <span>500g (&lt;1000 ELBW)</span>
+              <span>&lt;1500g VLBW</span>
+              <span>&lt;2500g LBW</span>
+              <span>4500g</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-sm font-semibold mb-1">
+              <label data-i18n="sliderPerc">Intrauterine Growth Chart Percentile</label>
+              <span id="percValDisplay" class="text-sky-700 font-bold">50th %</span>
+            </div>
+            <input type="range" id="percSlider" min="1" max="99" value="50" oninput="updateClassifier()" class="w-full h-2 bg-slate-200 rounded-lg cursor-pointer">
+            <div class="flex justify-between text-xs text-slate-400 mt-1">
+              <span>&lt;10th (SGA)</span>
+              <span>10th–90th (AGA)</span>
+              <span>&gt;90th (LGA)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Output Card -->
+        <div class="bg-slate-900 text-white rounded-xl p-5 flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-sky-400" data-i18n="resultHeader">Classification Result</h3>
+            <div class="p-3 rounded-lg bg-white/10">
+              <div class="text-xs text-slate-300" data-i18n="resGALabel">By Gestational Age:</div>
+              <div id="resGAText" class="font-bold text-base text-amber-300 mt-0.5"></div>
+            </div>
+            <div class="p-3 rounded-lg bg-white/10">
+              <div class="text-xs text-slate-300" data-i18n="resWTLabel">By Birth Weight:</div>
+              <div id="resWTText" class="font-bold text-base text-emerald-300 mt-0.5"></div>
+            </div>
+            <div class="p-3 rounded-lg bg-white/10">
+              <div class="text-xs text-slate-300" data-i18n="resChartLabel">By Growth Chart:</div>
+              <div id="resChartText" class="font-bold text-base text-sky-300 mt-0.5"></div>
+            </div>
+          </div>
+          <div id="postTermWarning" class="hidden p-3 rounded-lg bg-rose-500/20 border border-rose-400/40 text-xs text-rose-200"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. PHYSICAL, NEUROMUSCULAR & SYSTEMIC ASSESSMENT -->
+    <section id="assessment" class="space-y-6">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider text-sky-600" data-i18n="assessBadge">Module 2 • Clinical Examination</span>
+        <h2 class="text-2xl font-bold text-slate-900 mt-1" data-i18n="assessTitle">Physical, Neuromuscular & Systemic Assessment</h2>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Preterm vs Term Physical Comparison -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm lg:col-span-2">
+          <h3 class="font-bold text-slate-900 text-lg mb-4" data-i18n="physCompTitle">Physical Identification: Preterm LBW vs. Term</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left rtl:text-right border-collapse">
+              <thead>
+                <tr class="border-b border-slate-200 text-slate-500 bg-slate-50">
+                  <th class="p-3 font-semibold" data-i18n="tblFeature">Anatomical Sign</th>
+                  <th class="p-3 font-semibold text-amber-700" data-i18n="tblPreterm">Preterm Neonate</th>
+                  <th class="p-3 font-semibold text-emerald-700" data-i18n="tblTerm">Term Neonate</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200">
+                <tr>
+                  <td class="p-3 font-semibold" data-i18n="featBreast">Breast Tissue & Nodule</td>
+                  <td class="p-3 text-slate-600" data-i18n="preBreast">Flat areola, underdeveloped breast tissue, absent/tiny nodule</td>
+                  <td class="p-3 text-slate-600" data-i18n="termBreast">Raised areola, well-formed breast tissue & palpable nodule</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold" data-i18n="featFemale">Female Genitalia</td>
+                  <td class="p-3 text-slate-600" data-i18n="preFemale">Prominent clitoris and labia minora; labia majora widely separated</td>
+                  <td class="p-3 text-slate-600" data-i18n="termFemale">Labia majora fully developed, covering clitoris and labia minora</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold" data-i18n="featMale">Male Genitalia</td>
+                  <td class="p-3 text-slate-600" data-i18n="preMale">Undescended testes, smooth scrotum with few rugae</td>
+                  <td class="p-3 text-slate-600" data-i18n="termMale">Testes descended into pendulous scrotum covered with deep rugae</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold" data-i18n="featSole">Plantar Surface (Sole Creases)</td>
+                  <td class="p-3 text-slate-600" data-i18n="preSole">Smooth plantar surface with few or anterior-only creases</td>
+                  <td class="p-3 text-slate-600" data-i18n="termSole">Deep plantar creases covering the entire sole from toe to heel</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Neuromuscular & Systemic Lists -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
+          <div>
+            <h3 class="font-bold text-slate-900 text-base mb-2.5" data-i18n="neuroTitle">6 Neuromuscular Signs</h3>
+            <div class="grid grid-cols-2 gap-2 text-xs font-semibold text-slate-700">
+              <div class="p-2.5 bg-sky-50 border border-sky-100 rounded-lg" data-i18n="neuro1">1. Posture</div>
+              <div class="p-2.5 bg-sky-50 border border-sky-100 rounded-lg" data-i18n="neuro2">2. Square Window</div>
+              <div class="p-2.5 bg-sky-50 border border-sky-100 rounded-lg" data-i18n="neuro3">3. Scarf Sign</div>
+              <div class="p-2.5 bg-sky-50 border border-sky-100 rounded-lg" data-i18n="neuro4">4. Heel to Ear</div>
+              <div class="p-2.5 bg-sky-50 border border-sky-100 rounded-lg" data-i18n="neuro5">5. Popliteal Angle</div>
+              <div class="p-2.5 bg-sky-50 border border-sky-100 rounded-lg" data-i18n="neuro6">6. Arm Recoil Angle</div>
+            </div>
+          </div>
+
+          <hr class="border-slate-200">
+
+          <div>
+            <h3 class="font-bold text-slate-900 text-base mb-2.5" data-i18n="sysTitle">9 Systemic Assessments</h3>
+            <ul class="grid grid-cols-1 gap-1.5 text-xs text-slate-600 font-medium">
+              <li data-i18n="sys1">• a. General assessment</li>
+              <li data-i18n="sys2">• b. Respiratory assessment</li>
+              <li data-i18n="sys3">• c. Cardiovascular assessment</li>
+              <li data-i18n="sys4">• d. Gastrointestinal assessment</li>
+              <li data-i18n="sys5">• e. Genitourinary assessment</li>
+              <li data-i18n="sys6">• f. Neurologic-Musculoskeletal</li>
+              <li data-i18n="sys7">• g. Temperature</li>
+              <li data-i18n="sys8">• h. Skin assessment</li>
+              <li data-i18n="sys9">• i. Monitoring physiological data</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. GENERAL NURSING MANAGEMENT (10 PILLARS) -->
+    <section id="nursing" class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider text-sky-600" data-i18n="nursingBadge">Module 3 • Nursing Protocols</span>
+        <h2 class="text-2xl font-bold text-slate-900 mt-1" data-i18n="nursingTitle">General Nursing Management Pillars</h2>
+      </div>
+
+      <div id="nursingTabs" class="flex flex-wrap gap-2"></div>
+
+      <div id="nursingContentBox" class="bg-slate-50 rounded-xl p-6 border border-slate-200 min-h-[180px]"></div>
+    </section>
+
+    <!-- 5. COMMON PROBLEMS OF HIGH-RISK NEONATES -->
+    <section id="conditions" class="space-y-6">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider text-sky-600" data-i18n="condBadge">Module 4 • Pathophysiology & Management</span>
+        <h2 class="text-2xl font-bold text-slate-900 mt-1" data-i18n="condTitle">Common Problems of High-Risk Neonates</h2>
+      </div>
+
+      <!-- Condition Selector Buttons -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <button onclick="selectCondition('hypothermia')" id="condBtn_hypothermia" class="p-4 rounded-xl border border-slate-200 text-left rtl:text-right font-bold transition tab-active">
+          <div class="text-xs opacity-75">I</div>
+          <div class="text-sm sm:text-base" data-i18n="cond1Name">Hypothermia</div>
+          <div class="text-xs font-normal opacity-80 mt-0.5">&lt; 36.3°C Axillary</div>
+        </button>
+        <button onclick="selectCondition('jaundice')" id="condBtn_jaundice" class="p-4 rounded-xl border border-slate-200 bg-white text-slate-800 text-left rtl:text-right font-bold transition hover:border-sky-300">
+          <div class="text-xs text-slate-400">II</div>
+          <div class="text-sm sm:text-base" data-i18n="cond2Name">Hyperbilirubinemia</div>
+          <div class="text-xs font-normal text-slate-500 mt-0.5" data-i18n="cond2Sub">Jaundice & Kernicterus</div>
+        </button>
+        <button onclick="selectCondition('hypoglycemia')" id="condBtn_hypoglycemia" class="p-4 rounded-xl border border-slate-200 bg-white text-slate-800 text-left rtl:text-right font-bold transition hover:border-sky-300">
+          <div class="text-xs text-slate-400">III</div>
+          <div class="text-sm sm:text-base" data-i18n="cond3Name">Hypoglycemia</div>
+          <div class="text-xs font-normal text-slate-500 mt-0.5">&lt;40 Term / &lt;30 Preterm</div>
+        </button>
+        <button onclick="selectCondition('irds')" id="condBtn_irds" class="p-4 rounded-xl border border-slate-200 bg-white text-slate-800 text-left rtl:text-right font-bold transition hover:border-sky-300">
+          <div class="text-xs text-slate-400">IV</div>
+          <div class="text-sm sm:text-base" data-i18n="cond4Name">IRDS / HMD</div>
+          <div class="text-xs font-normal text-slate-500 mt-0.5" data-i18n="cond4Sub">Surfactant Deficiency</div>
+        </button>
+      </div>
+
+      <!-- Dynamic Condition Content -->
+      <div id="conditionDetailContainer" class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm"></div>
+    </section>
+
+    <!-- 6. INTERACTIVE SELF-ASSESSMENT QUIZ -->
+    <section id="quiz" class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-600" data-i18n="quizBadge">Knowledge Check</span>
+          <h2 class="text-2xl font-bold text-slate-900 mt-1" data-i18n="quizTitle">Clinical Exam Practice Quiz</h2>
+        </div>
+        <button onclick="renderQuiz()" class="self-start px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition" data-i18n="resetQuizBtn">Reset Answers</button>
+      </div>
+      <div id="quizContainer" class="space-y-4"></div>
+    </section>
+
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
+    <span data-i18n="footerNote">High-Risk Neonates Lecture Interactive Companion • Built for Nursing Education</span>
+  </footer>
+
+  <script>
+    let currentLang = 'en';
+    let currentFactor = 'maternal';
+    let currentNursingIdx = 0;
+    let currentCondition = 'hypothermia';
+
+    const i18n = {
+      en: {
+        appTitle: "High-Risk Neonates",
+        appSubtitle: "Interactive Clinical & Nursing Lecture",
+        navOverview: "Overview",
+        navClassifier: "Classifier",
+        navAssessment: "Assessment",
+        navNursing: "Nursing Care",
+        navConditions: "Conditions",
+        navQuiz: "Quiz",
+        OverviewBadge: "Module 1 • Fundamentals",
+        defTitle: "Definition of High-Risk Neonate",
+        defText1: "1. The high-risk neonate can be defined as a newborn (regardless of gestational age or birth weight) who has a greater than average chance of morbidity or mortality because of threats to life and health that occur during the prenatal, perinatal, and postnatal periods.",
+        defText2: "2. A neonate exposed to any condition that makes his life in danger.",
+        factorsTitle: "Factors Predisposing to High-Risk Neonate",
+        maternalTab: "A. Maternal Factors",
+        neonatalTab: "B. Neonatal Factors",
+        maternalList: [
+          "1. Low maternal weight, teenage / multiple pregnancy, stress, trauma, addictions.",
+          "2. Acute systemic disease: diabetes mellitus, heart or kidney diseases, and severe infection.",
+          "3. Induced premature delivery or previous preterm baby.",
+          "4. Lack of antenatal care and poor socio-economic condition."
+        ],
+        neonatalList: [
+          "1. Neonatal asphyxia.",
+          "2. Neonatal infection.",
+          "3. Congenital anomalies.",
+          "4. Prematurity & post-maturity.",
+          "5. Low Apgar score, hypoglycemia, and other conditions."
+        ],
+        gaTitle: "Gestational Age (GA)",
+        gaDef: "<strong>Definition:</strong> The course of time from day one of the menstrual cycle till birth.",
+        gaMethodsTitle: "5 Methods Used in Determination of GA:",
+        gaM1: "1. Physical & neurological examinations",
+        gaM2: "2. L.M.P (Last Menstrual Period)",
+        gaM3: "3. Obstetric history",
+        gaM4: "4. Lab tests",
+        gaM5: "5. Fetal ultrasonic scanning",
+        calcBadge: "Interactive Clinical Tool",
+        calcTitle: "Newborn Classification Simulator",
+        calcDesc: "Adjust the sliders to classify the neonate by gestational age, birth weight, and intrauterine growth chart percentile.",
+        sliderGA: "1. Gestational Age (Weeks)",
+        termRangeLabel: "Term: 38–42 wks",
+        sliderWeight: "2. Size / Birth Weight (Grams)",
+        sliderPerc: "3. Intrauterine Growth Chart Percentile",
+        resultHeader: "Classification Result",
+        resGALabel: "According to Gestational Age:",
+        resWTLabel: "According to Birth Weight:",
+        resChartLabel: "According to Growth Chart:",
+        gaPreterm: "Preterm (< 38 weeks)",
+        gaTerm: "Term (38 – 42 weeks)",
+        gaPost: "Post-term (> 42 weeks)",
+        wtNormal: "Normal Birth Weight (≥ 2500 gm)",
+        wtLBW: "Low Birth Weight - LBW (< 2500 gm)",
+        wtVLBW: "Very Low Birth Weight - VLBW (< 1500 gm)",
+        wtELBW: "Extremely / Very Very Low Birth Weight - VVLBW / ELBW (< 1000 gm)",
+        chartSGA: "Small for Gestational Age - SGA (< 10th percentile)",
+        chartAGA: "Appropriate for Gestational Age - AGA (10th – 90th percentile)",
+        chartLGA: "Large for Gestational Age - LGA (> 90th percentile)",
+        postTermAlert: "⚠️ Post-term Problems: a. Intrauterine Asphyxia | b. Meconium Aspiration | c. Birth Injuries.",
+        assessBadge: "Module 2 • Clinical Examination",
+        assessTitle: "Physical, Neuromuscular & Systemic Assessment",
+        physCompTitle: "Physical Assessment Identification: Preterm LBW vs. Term",
+        tblFeature: "Assessment Feature",
+        tblPreterm: "Preterm",
+        tblTerm: "Term",
+        featBreast: "Breast Tissues & Nodule",
+        preBreast: "Underdeveloped breast tissue; flat/absent breast nodule",
+        termBreast: "Well-developed breast tissue & prominent palpable nodule",
+        featFemale: "Genitals - Female",
+        preFemale: "Labia majora widely separated; prominent clitoris & labia minora",
+        termFemale: "Labia majora completely cover labia minora and clitoris",
+        featMale: "Genitals - Male",
+        preMale: "Scrotum small with few rugae; testes undescended",
+        termMale: "Testes descended; pendulous scrotum with extensive rugae",
+        featSole: "Plantar Surface (Sole Creases)",
+        preSole: "Smooth sole with very few anterior creases",
+        termSole: "Deep plantar creases across the entire sole",
+        neuroTitle: "6 Neuromuscular Assessments",
+        neuro1: "1. Posture",
+        neuro2: "2. Square Window",
+        neuro3: "3. Scarf Sign",
+        neuro4: "4. Heel to Ear",
+        neuro5: "5. Popliteal Angle",
+        neuro6: "6. Arm Recoil Angle",
+        sysTitle: "9 Systemic Assessments",
+        sys1: "• a. General assessment",
+        sys2: "• b. Respiratory assessment",
+        sys3: "• c. Cardiovascular assessment",
+        sys4: "• d. Gastrointestinal assessment",
+        sys5: "• e. Genitourinary assessment",
+        sys6: "• f. Neurologic-Musculoskeletal assessment",
+        sys7: "• g. Temperature",
+        sys8: "• h. Skin assessment",
+        sys9: "• i. Monitoring physiological data",
+        nursingBadge: "Module 3 • Nursing Protocols",
+        nursingTitle: "General Nursing Management",
+        condBadge: "Module 4 • Pathophysiology & Management",
+        condTitle: "Common Problems of High-Risk Neonates",
+        cond1Name: "Hypothermia",
+        cond2Name: "Hyperbilirubinemia",
+        cond2Sub: "Jaundice & Kernicterus",
+        cond3Name: "Hypoglycemia",
+        cond4Name: "IRDS / HMD",
+        cond4Sub: "Surfactant Deficiency",
+        quizBadge: "Knowledge Check",
+        quizTitle: "Clinical Self-Assessment Quiz",
+        resetQuizBtn: "Reset Answers",
+        footerNote: "High-Risk Neonates Lecture Interactive Companion • Bilingual English / Arabic Edition"
+      },
+      ar: {
+        appTitle: "حديثو الولادة عاليو الخطورة",
+        appSubtitle: "محاضرة سريرية وتمريضية تفاعلية",
+        navOverview: "نظرة عامة",
+        navClassifier: "حاسبة التصنيف",
+        navAssessment: "التقييم السريري",
+        navNursing: "الرعاية التمريضية",
+        navConditions: "المشكلات الشائعة",
+        navQuiz: "الاختبار",
+        OverviewBadge: "الوحدة 1 • الأساسيات",
+        defTitle: "تعريف حديث الولادة المعرض لمخاطر عالية (High-Risk Neonate)",
+        defText1: "1. يُعرّف بأنه المولود (بغض النظر عن عمر الحمل أو وزن الولادة) الذي لديه احتمالية أعلى من المتوسط للإصابة بالأمراض (Morbidity) أو الوفاة (Mortality) بسبب تهديدات للحياة والصحة تحدث خلال فترات ما قبل الولادة أو أثناءها أو بعدها.",
+        defText2: "2. أي مولود يتعرض لأي حالة تجعل حياته في خطر.",
+        factorsTitle: "العوامل المهيئة لخطورة حديثي الولادة",
+        maternalTab: "أ. عوامل متعلقة بالأم",
+        neonatalTab: "ب. عوامل متعلقة بالمولود",
+        maternalList: [
+          "1. انخفاض وزن الأم، حمل المراهقات أو الحمل المتعدد، التوتر، الإصابات، الإدمان.",
+          "2. الأمراض الجهازية الحادة: السكري، أمراض القلب أو الكلى، والعدوى الشديدة.",
+          "3. الولادة المبكرة المُحرَّضة أو ولادة طفل خديج سابق.",
+          "4. نقص الرعاية الصحية قبل الولادة وسوء الظروف الاجتماعية والاقتصادية."
+        ],
+        neonatalList: [
+          "1. اختناق الوليد (Neonatal asphyxia).",
+          "2. عدوى حديثي الولادة (Neonatal infection).",
+          "3. التشوهات الخلقية (Congenital anomalies).",
+          "4. الخداج (Prematurity) وتأخر موعد الولادة (Post-maturity).",
+          "5. انخفاض مقياس أبغار (Low Apgar score)، نقص سكر الدم، وغيرها."
+        ],
+        gaTitle: "عمر الحمل (Gestational Age)",
+        gaDef: "<strong>التعريف:</strong> الفترة الزمنية الممتدة من اليوم الأول للدورة الشهرية حتى الولادة.",
+        gaMethodsTitle: "5 طرق لتحديد عمر الحمل:",
+        gaM1: "1. الفحوصات البدنية والعصبية",
+        gaM2: "2. تاريخ آخر دورة شهرية (L.M.P)",
+        gaM3: "3. التاريخ التوليدي (Obstetric history)",
+        gaM4: "4. الفحوصات المخبرية (Lab tests)",
+        gaM5: "5. التصوير بالموجات فوق الصوتية للجنين (Ultrasound)",
+        calcBadge: "أداة سريرية تفاعلية",
+        calcTitle: "محاكي تصنيف حديثي الولادة",
+        calcDesc: "حرّك المؤشرات لتصنيف المولود حسب عمر الحمل، وزن الولادة، ومخطط النمو داخل الرحم.",
+        sliderGA: "1. عمر الحمل (بالأسابيع)",
+        termRangeLabel: "مكتمل: 38–42 أسبوع",
+        sliderWeight: "2. الحجم / وزن الولادة (بالجرام)",
+        sliderPerc: "3. النسبة المئوية على مخطط النمو داخل الرحم",
+        resultHeader: "نتيجة التصنيف",
+        resGALabel: "حسب عمر الحمل:",
+        resWTLabel: "حسب وزن الولادة:",
+        resChartLabel: "حسب مخطط النمو:",
+        gaPreterm: "خديج - Preterm (قبل 38 أسبوع)",
+        gaTerm: "مكتمل النمو - Term (38 – 42 أسبوع)",
+        gaPost: "متأخر الولادة - Post-term (بعد 42 أسبوع)",
+        wtNormal: "وزن طبيعي (≥ 2500 جم)",
+        wtLBW: "منخفض وزن الولادة - LBW (أقل من 2500 جم)",
+        wtVLBW: "منخفض الوزن جداً - VLBW (أقل من 1500 جم)",
+        wtELBW: "شديد الانخفاض - VVLBW / ELBW (أقل من 1000 جم)",
+        chartSGA: "صغير لعمر الحمل - SGA (تحت المئين 10)",
+        chartAGA: "مناسب لعمر الحمل - AGA (بين المئين 10 و 90)",
+        chartLGA: "كبير لعمر الحمل - LGA (فوق المئين 90)",
+        postTermAlert: "⚠️ مشاكل تأخر الولادة (Post-term): أ. الاختناق داخل الرحم | ب. استنشاق العقي (Meconium) | ج. إصابات الولادة.",
+        assessBadge: "الوحدة 2 • الفحص السريري",
+        assessTitle: "التقييم البدني والعصبي العضلي والجهازي",
+        physCompTitle: "مقارنة الفحص البدني: الخديج (Preterm LBW) مقابل المكتمل (Term)",
+        tblFeature: "العلامة التشريحية",
+        tblPreterm: "الخديج (Preterm)",
+        tblTerm: "مكتمل النمو (Term)",
+        featBreast: "أنسجة وعقيدة الثدي (Breast Nodule)",
+        preBreast: "أنسجة ثدي غير مكتملة وعقيدة ثدي غير محسوسة أو صغيرة جداً",
+        termBreast: "أنسجة ثدي مكتملة النمو وعقيدة ثدي بارزة ومحسوسة",
+        featFemale: "الأعضاء التناسلية الأنثوية",
+        preFemale: "تباعد الشفرين الكبيرين وبروز البظر والشفرين الصغيرين",
+        termFemale: "الشفران الكبيران مكتملان ويغطيان البظر والشفرين الصغيرين بالكامل",
+        featMale: "الأعضاء التناسلية الذكرية",
+        preMale: "كيس صفن أملس قليل التجاعيد مع عدم نزول الخصيتين",
+        termMale: "نزول الخصيتين في كيس صفن متدلٍ مليء بالتجاعيد العميقة",
+        featSole: "تجاعيد أخمص القدم (Sole Creases)",
+        preSole: "باطن قدم أملس مع تجاعيد قليلة في المقدمة فقط",
+        termSole: "تجاعيد عميقة تغطي كامل أخمص القدم حتى الكعب",
+        neuroTitle: "6 علامات للتقييم العصبي العضلي",
+        neuro1: "1. وضعية الجسم (Posture)",
+        neuro2: "2. نافذة المربع (Square Window)",
+        neuro3: "3. علامة الوشاح (Scarf Sign)",
+        neuro4: "4. الكعب إلى الأذن (Heel to Ear)",
+        neuro5: "5. الزاوية المأبضية (Popliteal Angle)",
+        neuro6: "6. زاوية ارتداد الذراع (Arm Recoil)",
+        sysTitle: "9 عناصر للتقييم الجهازي",
+        sys1: "• أ. التقييم العام (General)",
+        sys2: "• ب. تقييم الجهاز التنفسي (Respiratory)",
+        sys3: "• ج. تقييم القلب والأوعية (Cardiovascular)",
+        sys4: "• د. تقييم الجهاز الهضمي (Gastrointestinal)",
+        sys5: "• هـ. تقييم الجهاز البولي التناسلي (Genitourinary)",
+        sys6: "• و. التقييم العصبي والعضلي الهيكلي",
+        sys7: "• ز. درجة الحرارة (Temperature)",
+        sys8: "• ح. تقييم الجلد (Skin)",
+        sys9: "• ط. مراقبة البيانات الفسيولوجية",
+        nursingBadge: "الوحدة 3 • البروتوكولات التمريضية",
+        nursingTitle: "الإدارة التمريضية العامة (General Nursing Management)",
+        condBadge: "الوحدة 4 • الفيزيولوجيا المرضية والعلاج",
+        condTitle: "المشكلات الشائعة لحديثي الولادة عاليي الخطورة",
+        cond1Name: "انخفاض الحرارة (Hypothermia)",
+        cond2Name: "فرط البيليروبين (اليرقان)",
+        cond2Sub: "الصفراء واليرقان النووي",
+        cond3Name: "نقص سكر الدم (Hypoglycemia)",
+        cond4Name: "متلازمة الضائقة التنفسية (IRDS)",
+        cond4Sub: "نقص السرفاكتانت",
+        quizBadge: "اختبر معلوماتك",
+        quizTitle: "اختبار المراجعة السريرية",
+        resetQuizBtn: "إعادة ضبط الإجابات",
+        footerNote: "منصة محاضرة حديثي الولادة عاليي الخطورة • تدعم الإنجليزية والعربية"
+      }
+    };
+
+    const nursingPillars = [
+      {
+        en: {
+          title: "1. Respiratory Support",
+          items: [
+            "Assess for deviation of respiratory function; observe for signs of distress: grunting, cyanosis, nasal flaring, and apnea.",
+            "Position for optimum air exchange.",
+            "Suction from nasopharynx & trachea.",
+            "Administer prescribed oxygen therapy.",
+            "Closely monitor blood gases measurement.",
+            "Maintain neutral thermal environment to conserve utilization of O2.",
+            "Apply and manage monitoring equipment correctly.",
+            "Observe and assess infant's response to ventilation and oxygenation therapy."
+          ]
+        },
+        ar: {
+          title: "1. دعم الجهاز التنفسي",
+          items: [
+            "تقييم أي انحراف في وظيفة التنفس ومراقبة علامات الضائقة: الشخير (Grunting)، الزرقة (Cyanosis)، اتساع فتحات الأنف، وانقطاع التنفس (Apnea).",
+            "وضع الطفل في وضعية مثالية لتبادل الهواء.",
+            "الشفط من البلعوم الأنفي والقصبة الهوائية.",
+            "إعطاء العلاج بالأكسجين الموصوف طبياً.",
+            "مراقبة قياسات غازات الدم عن كثب.",
+            "الحفاظ على بيئة حرارية محايدة لتقليل استهلاك الأكسجين.",
+            "تطبيق وإدارة أجهزة المراقبة بشكل صحيح وتقييم استجابة الرضيع للتهوية."
+          ]
+        }
+      },
+      {
+        en: {
+          title: "2. Thermoregulation",
+          items: [
+            "Place infant in incubator, radiant warmer, or warmly clothed in open crib.",
+            "Monitor for signs of hyperthermia: redness & flushing.",
+            "Check temperature of infant in relation to temperature of heating unit.",
+            "Avoid situations that predispose to heat loss: exposure to cool air, drafts, bathing, or cold scales.",
+            "Monitor for signs of hypothermia: cold extremities & cyanosis.",
+            "Home/Ward warming methods: Skin-to-skin contact, baby warmly wrapped, nesting, and well-covered newborn."
+          ]
+        },
+        ar: {
+          title: "2. التنظيم الحراري",
+          items: [
+            "وضع الرضيع في الحضانة (Incubator)، أو الدفاية الإشعاعية (Radiant warmer)، أو إلباسه ملابس دافئة في سرير مفتوح.",
+            "مراقبة علامات ارتفاع الحرارة: الاحمرار والتوهج.",
+            "فحص حرارة الطفل مقارنة بحرارة وحدة التدفئة.",
+            "تجنب المواقف المسببة لفقدان الحرارة مثل الهواء البارد، التيارات الهوائية، الاستحمام، أو الموازين الباردة.",
+            "مراقبة علامات انخفاض الحرارة: برودة الأطراف والزرقة.",
+            "طرق التدفئة: التلامس الجلدي (Skin-to-skin)، اللف الدافئ، التعشيش (Nesting)، وتغطية الرأس."
+          ]
+        }
+      },
+      {
+        en: {
+          title: "3. Infection Protection",
+          items: [
+            "Ensure strict hand washing before and after handling the infant.",
+            "Ensure that all equipment in contact with infant is clean or sterile.",
+            "Ensure strict asepsis or sterility with invasive procedures.",
+            "Prevent persons with upper respiratory tract or communicable infections from direct contact with infant.",
+            "Isolate infants who have infections.",
+            "Ensure that the incubator is clean and sterilized."
+          ]
+        },
+        ar: {
+          title: "3. الحماية من العدوى",
+          items: [
+            "ضمان غسل اليدين جيداً قبل وبعد التعامل مع الرضيع.",
+            "التأكد من نظافة أو تعقيم جميع المعدات الملامسة للطفل.",
+            "تطبيق التعقيم الصارم (Strict asepsis) أثناء الإجراءات التداخلية.",
+            "منع المصابين بعدوى الجهاز التنفسي العلوي أو الأمراض المعدية من الاتصال المباشر بالمولود.",
+            "عزل الرضع المصابين بالعدوى.",
+            "التأكد من تنظيف وتعقيم الحضانة باستمرار."
+          ]
+        }
+      },
+      {
+        en: {
+          title: "4. Nutrition",
+          items: [
+            "Encourage breast-feeding if sucking, swallowing, and gag reflexes are strong.",
+            "Use gavage feeding (or Katori-spoon feeding) if infant tires easily or has weak sucking, gag, or swallowing reflexes.",
+            "Assist mothers to establish and maintain lactation until infant can be breast-fed.",
+            "Assist with parenteral fluid or total parenteral nutrition (TPN) therapy as ordered."
+          ]
+        },
+        ar: {
+          title: "4. التغذية (Nutrition)",
+          items: [
+            "تشجيع الرضاعة الطبيعية إذا كانت منعكسات المص والبلع والتقيؤ (Gag) قوية.",
+            "استخدام التغذية الأنبوبية (Gavage feeding) أو التغذية بالملعقة/الكأس (Katori-spoon) إذا كان الرضيع يتعب بسهولة أو لديه ضعف في منعكسات المص والبلع.",
+            "مساعدة الأمهات على إدرار الحليب والحفاظ عليه حتى يتمكن الرضيع من الرضاعة الطبيعية.",
+            "المساعدة في إعطاء السوائل الوريدية أو التغذية الوريدية الكاملة (TPN) حسب الأوامر الطبية."
+          ]
+        }
+      },
+      {
+        en: {
+          title: "5. Hydration",
+          items: [
+            "Monitor fluid and electrolytes closely with therapies that increase insensible water loss (IWL) e.g., phototherapy, radiant warmer.",
+            "Ensure adequate parenteral / oral fluid intake.",
+            "Assess state of hydration: skin turgor, edema, weight, mucous membrane, urine specific gravity, electrolytes, and fontanel.",
+            "Regulate parenteral fluid closely to avoid dehydration.",
+            "Monitor urinary output and laboratory values for evidence of dehydration or overhydration."
+          ]
+        },
+        ar: {
+          title: "5. الترطيب والسوائل",
+          items: [
+            "مراقبة السوائل والكهارل بدقة مع العلاجات التي تزيد الفقدان غير المحسوس للماء (IWL) مثل العلاج الضوئي والدفاية الإشعاعية.",
+            "ضمان كفاية السوائل الوريدية أو الفموية.",
+            "تقييم حالة الترطيب: مرونة الجلد، الوذمة، الوزن، الأغشية المخاطية، الكثافة النوعية للبول، الكهارل، واليافوخ.",
+            "تنظيم السوائل الوريدية بدقة ومراقبة إخراج البول والقيم المخبرية لمنع الجفاف أو فرط السوائل."
+          ]
+        }
+      },
+      {
+        en: {
+          title: "6. Skin Care",
+          items: [
+            "Assess skin for any discoloration, redness, signs of irritation, and skin turgor.",
+            "Clean skin with plain water.",
+            "Provide daily cleaning of eye, oral, cord, and diaper area, and any areas of skin breakdown.",
+            "Use minimal tape / adhesive.",
+            "Use a protective skin barrier between skin and all tape/adhesive, especially in premature babies."
+          ]
+        },
+        ar: {
+          title: "6. العناية بالجلد",
+          items: [
+            "تقييم الجلد لأي تغير في اللون، احمرار، علامات تهيج، ومرونة الجلد.",
+            "تنظيف الجلد بالماء العادي فقط.",
+            "التنظيف اليومي للعين، الفم، السرة، منطقة الحفاض، وأي مناطق تشقق جلدي.",
+            "استخدام أقل قدر ممكن من الأشرطة اللاصقة.",
+            "وضع حاجز جلدي واقٍ بين الجلد والأشرطة اللاصقة خصوصاً لدى الأطفال الخدج."
+          ]
+        }
+      },
+      {
+        en: {
+          title: "7. Neonatal Pain",
+          items: [
+            "Recognize that infants, regardless of gestational age, feel pain.",
+            "Use non-pharmacological pain measures appropriate to infant's age and condition: touch, music, cuddling, and rocking.",
+            "Encourage parents to provide comfort measures.",
+            "Administer analgesics as ordered.",
+            "Assess effectiveness of non-pharmacologic and pharmacologic pain measures."
+          ]
+        },
+        ar: {
+          title: "7. إدارة ألم الوليد",
+          items: [
+            "إدراك أن الرضع يشعرون بالألم بغض النظر عن عمر الحمل.",
+            "استخدام وسائل غير دوائية لتخفيف الألم مناسبة لعمر وحالة الطفل مثل اللمس، الموسيقى الهادئة، الاحتضان، والهز اللطيف.",
+            "تشجيع الوالدين على تقديم تدابير الراحة.",
+            "إعطاء المسكنات حسب الوصفة الطبية وتقييم فعالية التدابير الدوائية وغير الدوائية."
+          ]
+        }
+      },
+      {
+        en: {
+          title: "8. Growth, Family & Discharge",
+          items: [
+            "Growth & Development: Provide optimum nutrition for steady weight gain and brain growth; provide regular periods of undisturbed rest to save O2 and calories; promote parent-infant interaction.",
+            "Family Support: Give clear information, encourage questions, answer honestly to build trust, encourage visits from parents and siblings, demonstrate care, and explain why infant cannot go home yet.",
+            "Discharge Planning & Home Care: Assess family readiness, teach infant care techniques and observation, reinforce medical follow-up, and refer to support agencies."
+          ]
+        },
+        ar: {
+          title: "8. النمو، الأسرة، والتخطيط للخروج",
+          items: [
+            "تعزيز النمو والتطور: توفير تغذية مثالية لنمو الدماغ وزيادة الوزن، وتوفير فترات راحة منتظمة دون إزعاج لتوفير الأكسجين والسعرات، وتعزيز تفاعل الوالدين مع الطفل.",
+            "دعم الأسرة: تقديم معلومات واضحة، تشجيع الأسئلة والإجابة بصدق لبناء الثقة، تشجيع زيارة الأم والأب والإخوة، وتدريب الوالدين عملياً.",
+            "التخطيط للخروج والرعاية المنزلية: تقييم جاهزية الأسرة، تعليم تقنيات الرعاية والملاحظة، التأكيد على المتابعة الطبية، والإحالة للجهات الداعمة."
+          ]
+        }
+      }
+    ];
+
+    const conditionsData = {
+      hypothermia: {
+        en: `
+          <div class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-4">
+              <div>
+                <h3 class="text-xl font-bold text-slate-900">I. Hypothermia</h3>
+                <p class="text-sm text-slate-600">Occurs when axillary body temperature falls <strong>below 36.3°C</strong>.</p>
+              </div>
+              <span class="px-3 py-1 rounded-full bg-sky-100 text-sky-800 text-xs font-bold self-start">Incubator Temp: 28–32°C (up to 35°C)</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <h4 class="font-bold text-sm text-slate-900 mb-2">Associated Conditions</h4>
+                <ul class="text-xs space-y-1.5 text-slate-600">
+                  <li>• A. Cold environment</li>
+                  <li>• B. Incorrect immediate care (inadequate drying, insufficient clothing, separation from mother)</li>
+                  <li>• D. Diseased and stressed newborn</li>
+                  <li>• E. Hypoxia</li>
+                </ul>
+              </div>
+              <div class="p-4 rounded-xl bg-amber-50 border border-amber-200">
+                <h4 class="font-bold text-sm text-amber-900 mb-2">Initial Signs</h4>
+                <ul class="text-xs space-y-1.5 text-amber-800">
+                  <li>1. Cold feet</li>
+                  <li>2. Weak sucking ability or inability to nurse</li>
+                  <li>3. Lethargy and weak cry</li>
+                  <li>4. Skin color changes: paleness & cyanosis to peripheral mottling or plethora</li>
+                  <li>5. Tachypnea and tachycardia</li>
+                </ul>
+              </div>
+              <div class="p-4 rounded-xl bg-rose-50 border border-rose-200">
+                <h4 class="font-bold text-sm text-rose-900 mb-2">As Hypothermia Persists</h4>
+                <ul class="text-xs space-y-1.5 text-rose-800">
+                  <li>1. Profound lethargy</li>
+                  <li>2. Apnea and bradycardia</li>
+                  <li>3. High risk for hypoglycemia, metabolic acidosis, respiratory distress, and abnormal clotting factors</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+              <div class="p-4 rounded-xl border border-slate-200">
+                <h4 class="font-bold text-sm text-sky-700 mb-2">General Nursing Care</h4>
+                <ul class="text-xs space-y-1.5 text-slate-600">
+                  <li>1. Pre-warm incubator before placing newborn.</li>
+                  <li>2. Use double-walled incubator.</li>
+                  <li>3. Clothe and warmly wrap newborn in blanket when removed for feeding/cuddling.</li>
+                  <li>4. Head covering inside or outside incubator to prevent heat loss.</li>
+                </ul>
+              </div>
+              <div class="p-4 rounded-xl border border-slate-200">
+                <h4 class="font-bold text-sm text-sky-700 mb-2">*Open Care (Radiant Warmer)</h4>
+                <ul class="text-xs space-y-1.5 text-slate-600">
+                  <li>1. Use radiant warmer for undressed newborn except for a diaper.</li>
+                  <li>2. Place skin temperature probe flat on skin (usually on the abdomen).</li>
+                  <li>3. Take servo temperature every 30 minutes or per condition.</li>
+                </ul>
+              </div>
+              <div class="p-4 rounded-xl border border-slate-200">
+                <h4 class="font-bold text-sm text-sky-700 mb-2">**Incubator Care</h4>
+                <ul class="text-xs space-y-1.5 text-slate-600">
+                  <li>1. Ensure personnel are capable of using incubator properly.</li>
+                  <li>2. Adjust incubator temp per baby's temp & weight (28–32°C up to 35°C).</li>
+                  <li>3. Minimize room drafts & encourage parent visits/holding.</li>
+                  <li>4. Use portholes instead of opening the large door.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `,
+        ar: `
+          <div class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-4">
+              <div>
+                <h3 class="text-xl font-bold text-slate-900">أولاً: انخفاض حرارة الجسم (Hypothermia)</h3>
+                <p class="text-sm text-slate-600">يحدث عندما تنخفض درجة حرارة الجسم الإبطية عن <strong>36.3 درجة مئوية</strong>.</p>
+              </div>
+              <span class="px-3 py-1 rounded-full bg-sky-100 text-sky-800 text-xs font-bold self-start">حرارة الحضانة: 28–32°م (تصل إلى 35°م)</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <h4 class="font-bold text-sm text-slate-900 mb-2">الحالات المرتبطة بها</h4>
+                <ul class="text-xs space-y-1.5 text-slate-600">
+                  <li>• أ. البيئة الباردة.</li>
+                  <li>• ب. رعاية غير صحيحة فور الولادة (تجفيف غير كافٍ، ملابس غير كافية، فصل الطفل عن الأم).</li>
+                  <li>• د. مولود مريض أو مجهد.</li>
+                  <li>• هـ. نقص الأكسجة (Hypoxia).</li>
+                </ul>
+              </div>
+              <div class="p-4 rounded-xl bg-amber-50 border border-amber-200">
+                <h4 class="font-bold text-sm text-amber-900 mb-2">العلامات الأولية (Initial Signs)</h4>
+                <ul class="text-xs space-y-1.5 text-amber-800">
+                  <li>1. برودة القدمين (Cold feet).</li>
+                  <li>2. ضعف القدرة على المص أو عدم القدرة على الرضاعة.</li>
+                  <li>3. الخمول وضعف البكاء.</li>
+                  <li>4. تغير لون الجلد من الشحوب والزرقة إلى التبقع الطرفي (Mottling) أو الاحمرار الداكن (Plethora).</li>
+                  <li>5. تسارع التنفس وتسارع نبضات القلب.</li>
+                </ul>
+              </div>
+              <div class="p-4 rounded-xl bg-rose-50 border border-rose-200">
+                <h4 class="font-bold text-sm text-rose-900 mb-2">عند استمرار انخفاض الحرارة</h4>
+                <ul class="text-xs space-y-1.5 text-rose-800">
+                  <li>1. خمول شديد (Lethargy).</li>
+                  <li>2. انقطاع التنفس (Apnea) وبطء القلب (Bradycardia).</li>
+                  <li>3. خطر مرتفع لنقص سكر الدم، الحماض الاستقلابي، الضائقة التنفسية، واضطراب عوامل التخثر.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+              <div class="p-4 rounded-xl border border-slate-200">
+                <h4 class="font-bold text-sm text-sky-700 mb-2">الرعاية التمريضية العامة</h4>
+                <ul class="text-xs space-y-1.5 text-slate-600">
+                  <li>1. تدفئة الحضانة مسبقاً قبل وضع المولود.</li>
+                  <li>2. استخدام حضانة مزدوجة الجدران (Double-walled).</li>
+                  <li>3. إلباس المولود ولفه ببطانية دافئة عند إخراجه للرضاعة أو الاحتضان.</li>
+                  <li>4. تغطية الرأس داخل أو خارج الحضانة لمنع فقدان الحرارة.</li>
+                </ul>
+              </div>
+              <div class="p-4 rounded-xl border border-slate-200">
+                <h4 class="font-bold text-sm text-sky-700 mb-2">*الرعاية المفتوحة (Radiant Warmer)</h4>
+                <ul class="text-xs space-y-1.5 text-slate-600">
+                  <li>1. استخدام الدفاية الإشعاعية للمولود بدون ملابس باستثناء الحفاض.</li>
+                  <li>2. تثبيت حساس الحرارة (Probe) بشكل مسطح على جلد البطن.</li>
+                  <li>3. قياس حرارة النظام (Servo) كل 30 دقيقة أو حسب حالة المولود.</li>
+                </ul>
+              </div>
+              <div class="p-4 rounded-xl border border-slate-200">
+                <h4 class="font-bold text-sm text-sky-700 mb-2">**رعاية الحضانة (Incubator Care)</h4>
+                <ul class="text-xs space-y-1.5 text-slate-600">
+                  <li>1. التأكد من كفاءة الطاقم في استخدام الحضانة.</li>
+                  <li>2. ضبط حرارة الحضانة حسب حرارة ووزن الطفل (28–32°م وحتى 35°م).</li>
+                  <li>3. تقليل التيارات الهوائية وتشجيع الوالدين على الزيارة وحمل الطفل.</li>
+                  <li>4. استخدام الفتحات الجانبية (Portholes) بدلاً من فتح الباب الكبير.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      jaundice: {
+        en: `
+          <div class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+              <h3 class="text-xl font-bold text-slate-900">II. Hyperbilirubinemia (Neonatal Jaundice)</h3>
+              <p class="text-sm text-slate-600">Increased bilirubin level in the blood characterized by yellow discoloration of skin, mucous membranes, sclera, and organs.</p>
+            </div>
+
+            <!-- Comparison Table -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs sm:text-sm text-left border-collapse border border-slate-200">
+                <thead class="bg-slate-100 text-slate-700">
+                  <tr>
+                    <th class="p-2.5 border border-slate-200">Criteria</th>
+                    <th class="p-2.5 border border-slate-200 text-rose-700">Pathological Jaundice</th>
+                    <th class="p-2.5 border border-slate-200 text-emerald-700">Physiological Jaundice</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                  <tr>
+                    <td class="p-2.5 font-semibold bg-slate-50">Onset</td>
+                    <td class="p-2.5">Appears within the <strong>1st day (first 24 hours)</strong> after birth</td>
+                    <td class="p-2.5">Not before <strong>2nd or 3rd day</strong> in term baby; after <strong>3rd or 4th day</strong> in premature baby</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-semibold bg-slate-50">Duration</td>
+                    <td class="p-2.5">Needs longer time</td>
+                    <td class="p-2.5">Disappears by end of <strong>7 days</strong> in term; lasts <strong>9 to 10 days</strong> in premature</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-semibold bg-slate-50">Total Serum Bilirubin</td>
+                    <td class="p-2.5">Exceeds physiological limits</td>
+                    <td class="p-2.5">Never exceeds <strong>12 mg/dl</strong> in full term and <strong>15 mg/dl</strong> in preterm</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-semibold bg-slate-50">Daily Rise</td>
+                    <td class="p-2.5">Exceeds 5 mg/dl per day</td>
+                    <td class="p-2.5">Daily rise never exceeds <strong>5 mg/dl</strong></td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-semibold bg-slate-50">Kernicterus & Treatment</td>
+                    <td class="p-2.5">Leads to <strong>Kernicterus</strong>; treatment is urgent as soon as possible</td>
+                    <td class="p-2.5">No kernicterus; requires no specific treatment</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-semibold bg-slate-50">Clinical Picture</td>
+                    <td class="p-2.5">Looks sick, poor sucking, pale, abnormal stool and urine color</td>
+                    <td class="p-2.5">Good sucker, no anemia, not sick, normal stool and urine color</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Causes & Kernicterus -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                <h4 class="font-bold text-sm text-slate-900">Causes of Hyperbilirubinemia</h4>
+                <p><strong>A. Unconjugated:</strong></p>
+                <ul class="pl-4 space-y-1 text-slate-600">
+                  <li>1. Increased production (overload): Hemolytic disorders (Rh or ABO incompatibility), extravascular blood (Hematoma), Polycythemia.</li>
+                  <li>2. Defective uptake: Congenital reduction of Glucuronyl transferase enzyme, drugs inhibiting the enzyme, Breast milk jaundice.</li>
+                </ul>
+                <p class="pt-1"><strong>B. Conjugated:</strong></p>
+                <ul class="pl-4 space-y-1 text-slate-600">
+                  <li>1. Impaired transport out of liver cells (Dubin-Johnson's syndrome).</li>
+                  <li>2. Hepatitis.</li>
+                </ul>
+              </div>
+
+              <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 space-y-2 text-xs">
+                <h4 class="font-bold text-sm text-rose-900">Kernicterus (Bilirubin Encephalopathy)</h4>
+                <p class="text-rose-800">Deposition of toxic unconjugated bilirubin in the brain causing yellowish staining and neuronal necrosis.</p>
+                <ul class="space-y-1 text-rose-900 font-medium">
+                  <li>• <strong>Stage 1:</strong> Poor feeding, vomiting, high-pitched cry, decreased tone, lethargy.</li>
+                  <li>• <strong>Stage 2:</strong> Seizures, fever (many newborns die in this phase).</li>
+                  <li>• <strong>Stage 3:</strong> Spasticity decreases at ~1 week of age (asymptomatic).</li>
+                  <li>• <strong>Stage 4:</strong> Progressive spasticity, deafness, and mental retardation.</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Phototherapy & Exchange Transfusion -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-4 rounded-xl border border-slate-200 space-y-2 text-xs">
+                <h4 class="font-bold text-sm text-sky-700">Phototherapy Indications & Nursing Care</h4>
+                <p class="font-semibold text-slate-700">Indications by Day of Life: Day 1: 5–9 mg/dl | Day 2: 9–15 mg/dl | Day 3: 15–20 mg/dl</p>
+                <p class="text-slate-500"><strong>Side Effects:</strong> Dehydration (increased IWL), watery diarrhea, dark yellow urine, retinal damage, erythema/rashes, bronze baby syndrome, cell damage, upset maternal-infant interaction.</p>
+                <p class="font-semibold text-slate-800 pt-1">9 Nursing Responsibilities:</p>
+                <ol class="list-decimal pl-4 space-y-0.5 text-slate-600">
+                  <li>Place lamp <strong>5–8 cm</strong> over the incubator.</li>
+                  <li>Continue feeding.</li>
+                  <li>Shield the newborn's eyes.</li>
+                  <li>Keep naked except diaper area & change position frequently.</li>
+                  <li>Cleanse skin frequently to prevent irritation.</li>
+                  <li>Maintain adequate fluid intake (calculate I&O).</li>
+                  <li>Check body temperature every <strong>4 hours</strong>.</li>
+                  <li>Weigh newborn daily & observe skin, mucous membranes, and stool.</li>
+                  <li>Follow bilirubin levels for at least <strong>24 hours</strong> after discontinuing phototherapy.</li>
+                </ol>
+              </div>
+
+              <div class="p-4 rounded-xl border border-slate-200 space-y-2 text-xs">
+                <h4 class="font-bold text-sm text-sky-700">Exchange Transfusion</h4>
+                <p class="text-slate-600">Catheter introduced into the <strong>umbilical vein</strong> over <strong>45–60 min</strong> by alternating aspiration of <strong>20 ml</strong> of newborn's blood and infusion of <strong>20 ml</strong> of donor blood.</p>
+                <p class="text-rose-700"><strong>Complications:</strong> 1. Embolism, thrombosis, infarction | 2. Arrhythmias, heart failure/arrest | 3. Electrolyte disturbances | 4. Thrombocytopenia | 5. Infections | 6. Hypo/hyperthermia.</p>
+                <p class="font-semibold text-slate-800 pt-1">7 Nursing Responsibilities:</p>
+                <ol class="list-decimal pl-4 space-y-0.5 text-slate-600">
+                  <li>Keep newborn <strong>NPO for 2–4 hours</strong> before exchange to prevent aspiration.</li>
+                  <li>Check donor blood compatibility.</li>
+                  <li>Keep resuscitation equipment at bedside.</li>
+                  <li>Assist physician with procedure.</li>
+                  <li>Maintain body temperature to avoid hypothermia and cold stress.</li>
+                  <li>Monitor vital signs and observe for rash.</li>
+                  <li>Post-transfusion: monitor vital signs & check umbilical cord for bleeding or infection.</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        `,
+        ar: `
+          <div class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+              <h3 class="text-xl font-bold text-slate-900">ثانياً: فرط بيليروبين الدم (Hyperbilirubinemia)</h3>
+              <p class="text-sm text-slate-600">ارتفاع مستوى البيليروبين في الدم ويتميز باصفرار الجلد والأغشية المخاطية وصلبة العين والأعضاء.</p>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs sm:text-sm text-right border-collapse border border-slate-200">
+                <thead class="bg-slate-100 text-slate-700">
+                  <tr>
+                    <th class="p-2.5 border border-slate-200">المعيار</th>
+                    <th class="p-2.5 border border-slate-200 text-rose-700">اليرقان المرضي (Pathological)</th>
+                    <th class="p-2.5 border border-slate-200 text-emerald-700">اليرقان الفسيولوجي (Physiological)</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                  <tr>
+                    <td class="p-2.5 font-semibold bg-slate-50">وقت الظهور</td>
+                    <td class="p-2.5">يظهر خلال <strong>اليوم الأول (أول 24 ساعة)</strong> بعد الولادة</td>
+                    <td class="p-2.5">لا يظهر قبل <strong>اليوم 2 أو 3</strong> للمكتمل، وبعد <strong>اليوم 3 أو 4</strong> للخديج</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-semibold bg-slate-50">المدة</td>
+                    <td class="p-2.5">يستغرق وقتاً أطول</td>
+                    <td class="p-2.5">يختفي بنهاية <strong>7 أيام</strong> للمكتمل، ويستمر <strong>9–10 أيام</strong> للخديج</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-semibold bg-slate-50">مستوى البيليروبين الكلي</td>
+                    <td class="p-2.5">يتجاوز الحدود الفسيولوجية</td>
+                    <td class="p-2.5">لا يتجاوز <strong>12 مجم/ديسيلتر</strong> للمكتمل و <strong>15 مجم/ديسيلتر</strong> للخديج</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-semibold bg-slate-50">الزيادة اليومية</td>
+                    <td class="p-2.5">تتجاوز 5 مجم/ديسيلتر يومياً</td>
+                    <td class="p-2.5">لا تتجاوز <strong>5 مجم/ديسيلتر</strong> يومياً</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-semibold bg-slate-50">اليرقان النووي والعلاج</td>
+                    <td class="p-2.5">يؤدي إلى <strong>اليرقان النووي (Kernicterus)</strong>؛ يتطلب علاجاً فورياً</td>
+                    <td class="p-2.5">لا يسبب يرقاناً نووياً ولا يتطلب علاجاً طبياً خاصاً</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-semibold bg-slate-50">الحالة السريرية</td>
+                    <td class="p-2.5">يبدو مريضاً، ضعف المص، شحوب، تغير لون البول والبراز</td>
+                    <td class="p-2.5">رضاعة جيدة، لا فقر دم، غير مريض، لون البول والبراز طبيعي</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                <h4 class="font-bold text-sm text-slate-900">أسباب فرط البيليروبين</h4>
+                <p><strong>أ. غير المباشر (Unconjugated):</strong></p>
+                <ul class="pr-4 space-y-1 text-slate-600">
+                  <li>1. زيادة الإنتاج فوق طاقة الكبد: انحلال الدم (عدم توافق Rh أو ABO)، تجمع دموي خارج الأوعية (Hematoma)، كثرة الكريات الحمر (Polycythemia).</li>
+                  <li>2. ضعف الالتقاط الكبدي: نقص خلقي في إنزيم Glucuronyl transferase، أدوية تثبط الإنزيم، أو يرقان حليب الأم.</li>
+                </ul>
+                <p class="pt-1"><strong>ب. المباشر (Conjugated):</strong></p>
+                <ul class="pr-4 space-y-1 text-slate-600">
+                  <li>1. ضعف نقل البيليروبين المقترن خارج خلايا الكبد (متلازمة Dubin-Johnson).</li>
+                  <li>2. التهاب الكبد (Hepatitis).</li>
+                </ul>
+              </div>
+
+              <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 space-y-2 text-xs">
+                <h4 class="font-bold text-sm text-rose-900">اليرقان النووي (Kernicterus)</h4>
+                <p class="text-rose-800">اعتلال دماغي ناتج عن ترسب البيليروبين غير المباشر السام في خلايا الدماغ ونخر الخلايا العصبية.</p>
+                <ul class="space-y-1 text-rose-900 font-medium">
+                  <li>• <strong>المرحلة 1:</strong> ضعف الرضاعة، قيء، بكاء حاد الطبقة، نقص المقوية العضلية، خمول.</li>
+                  <li>• <strong>المرحلة 2:</strong> تشنجات، حمى (يتوفى العديد من المواليد في هذه المرحلة).</li>
+                  <li>• <strong>المرحلة 3:</strong> يقل التشنج العضلي عند عمر أسبوع تقريباً (بدون أعراض واضحة).</li>
+                  <li>• <strong>المرحلة 4:</strong> تشنج عضلي متفاقم، صمم، وتأخر عقلي.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-4 rounded-xl border border-slate-200 space-y-2 text-xs">
+                <h4 class="font-bold text-sm text-sky-700">العلاج الضوئي (Phototherapy)</h4>
+                <p class="font-semibold text-slate-700">دواعي الاستعمال: اليوم 1: 5–9 مجم/ديسيلتر | اليوم 2: 9–15 مجم/ديسيلتر | اليوم 3: 15–20 مجم/ديسيلتر</p>
+                <p class="text-slate-500"><strong>الآثار الجانبية:</strong> الجفاف، إسهال مائي، بول أصفر داكن، تلف الشبكية، طفح جلدي، متلازمة الطفل البرونزي، تلف الخلايا، اضطراب تفاعل الأم والرضيع.</p>
+                <p class="font-semibold text-slate-800 pt-1">9 مسؤوليات تمريضية:</p>
+                <ol class="list-decimal pr-4 space-y-0.5 text-slate-600">
+                  <li>وضع المصباح على بعد <strong>5–8 سم</strong> فوق الحضانة.</li>
+                  <li>الاستمرار في الرضاعة وتشجيع التغذية المبكرة لتحفيز حركة الأمعاء.</li>
+                  <li>تغطية وحماية عيني المولود.</li>
+                  <li>إبقاء المولود بدون ملابس باستثناء الحفاض وتغيير وضعيته باستمرار.</li>
+                  <li>تنظيف الجلد بانتظام لمنع التهيج.</li>
+                  <li>الحفاظ على كمية سوائل كافية وحساب السوائل الداخلة والخارجة.</li>
+                  <li>فحص حرارة الجسم كل <strong>4 ساعات</strong>.</li>
+                  <li>وزن المولود يومياً وملاحظة الجلد والأغشية المخاطية والبراز.</li>
+                  <li>متابعة مستوى البيليروبين لمدة <strong>24 ساعة على الأقل</strong> بعد إيقاف العلاج الضوئي.</li>
+                </ol>
+              </div>
+
+              <div class="p-4 rounded-xl border border-slate-200 space-y-2 text-xs">
+                <h4 class="font-bold text-sm text-sky-700">نقل الدم التبادلي (Exchange Transfusion)</h4>
+                <p class="text-slate-600">إدخال قسطرة في <strong>الوريد السري</strong> خلال <strong>45–60 دقيقة</strong> بالتناوب بين سحب <strong>20 مل</strong> من دم المولود وحقن <strong>20 مل</strong> من دم المتبرع.</p>
+                <p class="text-rose-700"><strong>المضاعفات:</strong> 1. صمة أو خثرة أو احتشاء | 2. اضطراب نظم القلب أو توقفه | 3. اضطراب الكهارل | 4. نقص الصفائح | 5. العدوى | 6. انخفاض أو ارتفاع الحرارة.</p>
+                <p class="font-semibold text-slate-800 pt-1">7 مسؤوليات تمريضية:</p>
+                <ol class="list-decimal pr-4 space-y-0.5 text-slate-600">
+                  <li>إبقاء المولود صائماً (<strong>NPO لمدة 2–4 ساعات</strong>) قبل الإجراء لمنع الاستنشاق الرئوي.</li>
+                  <li>التحقق من توافق دم المتبرع.</li>
+                  <li>تجهيز معدات الإنعاش بجانب السرير.</li>
+                  <li>مساعدة الطبيب أثناء الإجراء.</li>
+                  <li>الحفاظ على حرارة الجسم لمنع الإجهاد البارد.</li>
+                  <li>مراقبة العلامات الحيوية وملاحظة أي طفح جلدي.</li>
+                  <li>بعد النقل: استمرار مراقبة العلامات الحيوية وفحص السرة للنزيف أو العدوى.</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      hypoglycemia: {
+        en: `
+          <div class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+              <h3 class="text-xl font-bold text-slate-900">III. Neonatal Hypoglycemia</h3>
+              <p class="text-sm text-slate-600">Defined as blood glucose level <strong>&lt; 40 mg/dl in term newborn</strong> or <strong>&lt; 30 mg/dl in preterm newborn</strong>.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
+                <h4 class="font-bold text-sm text-slate-900">Physiology & Causes</h4>
+                <p class="text-slate-600">Glycogen stores are deposited in the liver, heart, and skeletal muscles during the <strong>last trimester</strong> (sufficient for first 2–3 days in normal full-term infants).</p>
+                <p class="font-semibold text-slate-800">Causes:</p>
+                <ul class="space-y-1 text-slate-600">
+                  <li>• A. Increased glucose utilization</li>
+                  <li>• B. Decreased production / store</li>
+                  <li>• C. Both</li>
+                </ul>
+              </div>
+
+              <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs space-y-2">
+                <h4 class="font-bold text-sm text-amber-900">Signs & Symptoms (48–72 hrs)</h4>
+                <p class="text-amber-800"><strong>Cerebral Signs:</strong> Jitteriness, seizures, tremors, lethargy, apnea, or high-pitched cry.</p>
+                <p class="text-amber-800"><strong>Other Signs:</strong> Cyanosis, poor feeding, apnea, and respiratory distress.</p>
+                <p class="text-amber-700 italic">Differential: CNS disorder, sepsis, hemorrhage, infection, hypocalcemia.</p>
+              </div>
+
+              <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs space-y-3">
+                <h4 class="font-bold text-sm text-emerald-900">Emergency Dextrose Calculator</h4>
+                <p class="text-emerald-800">Protocol: <strong>200 mg/kg glucose</strong> OR <strong>2 cc/kg of 10% Dextrose</strong> IV over 5 minutes, repeated as needed.</p>
+                <div>
+                  <label class="block font-semibold mb-1">Newborn Weight (kg):</label>
+                  <input type="number" id="dextroseWeightInput" value="2.5" step="0.1" min="0.5" max="6" oninput="calcDextrose()" class="w-full p-2 rounded border border-emerald-300 bg-white font-bold text-slate-900">
+                </div>
+                <div id="dextroseResult" class="p-2.5 rounded bg-emerald-900 text-white font-bold text-center">
+                  Bolus: 5.0 ml of 10% Dextrose (500 mg) over 5 min
+                </div>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl border border-slate-200 text-xs grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <h4 class="font-bold text-sm text-sky-700 mb-1">Nursing Assessment</h4>
+                <ol class="list-decimal pl-4 space-y-1 text-slate-600">
+                  <li>History</li>
+                  <li>Determine gestational age</li>
+                  <li>Assess feeding and fluid</li>
+                  <li>Assess glucose level</li>
+                  <li>Assess for signs of hypoglycemia</li>
+                </ol>
+              </div>
+              <div>
+                <h4 class="font-bold text-sm text-sky-700 mb-1">Nursing Intervention</h4>
+                <ol class="list-decimal pl-4 space-y-1 text-slate-600">
+                  <li>Obtain blood glucose level regularly with a screening strip</li>
+                  <li>Provide feeding</li>
+                  <li>Provide I.V. fluids</li>
+                  <li>Provide the newborn with a neutral thermal environment</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        `,
+        ar: `
+          <div class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+              <h3 class="text-xl font-bold text-slate-900">ثالثاً: نقص سكر الدم (Hypoglycemia)</h3>
+              <p class="text-sm text-slate-600">يُعرّف بانخفاض مستوى الجلوكوز في الدم عن <strong>40 مجم/ديسيلتر للمولود المكتمل</strong> أو أقل من <strong>30 مجم/ديسيلتر للخديج</strong>.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
+                <h4 class="font-bold text-sm text-slate-900">الفيزيولوجيا والأسباب</h4>
+                <p class="text-slate-600">يُخزن الجليكوجين في الكبد والقلب والعضلات الهيكلية خلال <strong>الثلث الأخير من الحمل</strong> (يكفي لأول 2–3 أيام في المولود الطبيعي).</p>
+                <p class="font-semibold text-slate-800">الأسباب:</p>
+                <ul class="space-y-1 text-slate-600">
+                  <li>• أ. زيادة استهلاك الجلوكوز</li>
+                  <li>• ب. نقص الإنتاج أو المخزون</li>
+                  <li>• ج. كلاهما معاً</li>
+                </ul>
+              </div>
+
+              <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs space-y-2">
+                <h4 class="font-bold text-sm text-amber-900">العلامات والأعراض (خلال 48–72 ساعة)</h4>
+                <p class="text-amber-800"><strong>علامات دماغية:</strong> اهتزاز الأطراف (Jitteriness)، تشنجات، رعشة، خمول، انقطاع التنفس، وبكاء حاد الطبقة.</p>
+                <p class="text-amber-800"><strong>علامات أخرى:</strong> زرقة، ضعف الرضاعة، وضائقة تنفسية.</p>
+                <p class="text-amber-700 italic">يتشابه مع: اضطرابات الجهاز العصبي، الإنتان، النزيف، ونقص الكالسيوم.</p>
+              </div>
+
+              <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs space-y-3">
+                <h4 class="font-bold text-sm text-emerald-900">حاسبة جرعة الدكستروز الطارئة</h4>
+                <p class="text-emerald-800">البروتوكول: <strong>200 مجم/كجم جلوكوز</strong> أو <strong>2 مل/كجم من دكستروز 10%</strong> وريدياً خلال 5 دقائق.</p>
+                <div>
+                  <label class="block font-semibold mb-1">وزن المولود (كجم):</label>
+                  <input type="number" id="dextroseWeightInput" value="2.5" step="0.1" min="0.5" max="6" oninput="calcDextrose()" class="w-full p-2 rounded border border-emerald-300 bg-white font-bold text-slate-900">
+                </div>
+                <div id="dextroseResult" class="p-2.5 rounded bg-emerald-900 text-white font-bold text-center">
+                  الجرعة: 5.0 مل من دكستروز 10% (500 مجم) خلال 5 دقائق
+                </div>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl border border-slate-200 text-xs grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <h4 class="font-bold text-sm text-sky-700 mb-1">التقييم التمريضي (Assessment)</h4>
+                <ol class="list-decimal pr-4 space-y-1 text-slate-600">
+                  <li>أخذ التاريخ الصحي</li>
+                  <li>تحديد عمر الحمل</li>
+                  <li>تقييم التغذية والسوائل</li>
+                  <li>قياس مستوى الجلوكوز</li>
+                  <li>تقييم علامات نقص سكر الدم</li>
+                </ol>
+              </div>
+              <div>
+                <h4 class="font-bold text-sm text-sky-700 mb-1">التدخل التمريضي (Intervention)</h4>
+                <ol class="list-decimal pr-4 space-y-1 text-slate-600">
+                  <li>قياس سكر الدم بانتظام بشرائط الفحص</li>
+                  <li>توفير التغذية المناسبة</li>
+                  <li>إعطاء السوائل الوريدية</li>
+                  <li>توفير بيئة حرارية محايدة للمولود</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      irds: {
+        en: `
+          <div class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+              <h3 class="text-xl font-bold text-slate-900">IV. Idiopathic Respiratory Distress Syndrome (IRDS / RDS / HMD)</h3>
+              <p class="text-sm text-slate-600">Also known as <strong>Hyaline Membrane Disease (HMD)</strong>—a severe developmental lung disorder related to delay in lung maturation.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                <h4 class="font-bold text-sm text-slate-900">Pathophysiology</h4>
+                <p class="text-slate-600 leading-relaxed">
+                  Results from deficiency or absence of <strong>surfactant</strong> (a lipoprotein substance secreted by the alveolar epithelium that reduces surface tension of fluids lining the alveoli and respiratory passages, resulting in uniform lung expansion and maintenance of inflation).
+                </p>
+              </div>
+
+              <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 space-y-1.5">
+                <h4 class="font-bold text-sm text-amber-900">8 Respiratory Signs & Symptoms</h4>
+                <ul class="space-y-1 text-amber-800 font-medium">
+                  <li>1. Tachypnea (up to <strong>80 to 120 breaths/min</strong>)</li>
+                  <li>2. Dyspnea</li>
+                  <li>3. Pronounced substernal retractions</li>
+                  <li>4. Inspiratory grunt</li>
+                  <li>5. Audible expiratory grunt</li>
+                  <li>6. Flaring of the external nares</li>
+                  <li>7. Cyanosis</li>
+                  <li>8. Flaccidity</li>
+                </ul>
+              </div>
+
+              <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 space-y-1.5">
+                <h4 class="font-bold text-sm text-rose-900">Therapeutic Management</h4>
+                <ul class="space-y-1.5 text-rose-800">
+                  <li>• Maintain a <strong>neutral thermal environment</strong> to conserve utilization of oxygen.</li>
+                  <li>• Provide additional fraction of inspired oxygen (FiO2).</li>
+                  <li>• Prevent hypotension/hypertension and hypovolemia.</li>
+                  <li>• Correct respiratory acidosis by assisted ventilation.</li>
+                  <li class="font-bold text-rose-950 bg-rose-200/60 p-2 rounded">⚠️ CRITICAL RULE: Nipple and gavage feeding are CONTRAINDICATED in any acute respiratory distress situation!</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `,
+        ar: `
+          <div class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+              <h3 class="text-xl font-bold text-slate-900">رابعاً: متلازمة الضائقة التنفسية مجهولة السبب (IRDS / HMD)</h3>
+              <p class="text-sm text-slate-600">تُعرف أيضاً بـ <strong>مرض الغشاء الهياليني (Hyaline Membrane Disease)</strong>، وهي اضطراب تطوري شديد ناتج عن تأخر نضج الرئة.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                <h4 class="font-bold text-sm text-slate-900">الفيزيولوجيا المرضية (Pathophysiology)</h4>
+                <p class="text-slate-600 leading-relaxed">
+                  تحدث نتيجة نقص أو غياب مادة <strong>السرفاكتانت (Surfactant)</strong>، وهي مادة بروتينية دهنية تفرزها ظهارة الحويصلات الهوائية لتقليل التوتر السطحي للسوائل المبطنة للحويصلات، مما يسمح بتمدد الرئة بشكل متساوٍ ومنع انخماصها.
+                </p>
+              </div>
+
+              <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 space-y-1.5">
+                <h4 class="font-bold text-sm text-amber-900">8 علامات وأعراض تنفسية</h4>
+                <ul class="space-y-1 text-amber-800 font-medium">
+                  <li>1. تسارع التنفس (يصل إلى <strong>80 – 120 نفس/دقيقة</strong>)</li>
+                  <li>2. عسر التنفس (Dyspnea)</li>
+                  <li>3. انسحاب واضح تحت القص (Substernal retractions)</li>
+                  <li>4. شخير شهيقي (Inspiratory grunt)</li>
+                  <li>5. شخير زفيري مسموع (Audible expiratory grunt)</li>
+                  <li>6. اتساع فتحات الأنف الخارجية (Nasal flaring)</li>
+                  <li>7. الزرقة (Cyanosis)</li>
+                  <li>8. الارتخاء العضلي (Flaccidity)</li>
+                </ul>
+              </div>
+
+              <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 space-y-1.5">
+                <h4 class="font-bold text-sm text-rose-900">الإدارة العلاجية (Therapeutic Management)</h4>
+                <ul class="space-y-1.5 text-rose-800">
+                  <li>• الحفاظ على <strong>بيئة حرارية محايدة</strong> لتقليل استهلاك الأكسجين.</li>
+                  <li>• توفير نسبة إضافية من الأكسجين المستنشق.</li>
+                  <li>• الوقاية من اضطراب ضغط الدم ونقص حجم الدم (Hypovolemia).</li>
+                  <li>• تصحيح الحماض التنفسي بواسطة التهوية المساعدة.</li>
+                  <li class="font-bold text-rose-950 bg-rose-200/60 p-2 rounded">⚠️ قاعدة حرجة: يُمنع منعاً باتاً (Contraindicated) الإرضاع بالحلمة أو بالأنبوب (Gavage) في حالات الضائقة التنفسية الحادة!</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `
+      }
+    };
+
+    const quizQuestions = [
+      {
+        en: {
+          q: "1. According to the lecture, a neonate is classified as Preterm if born before:",
+          options: ["37 weeks of gestation", "38 weeks of gestation", "40 weeks of gestation", "42 weeks of gestation"],
+          ans: 1,
+          exp: "In this lecture's classification: Preterm is born before 38 weeks, Term is 38–42 weeks, and Post-term is after 42 weeks."
+        },
+        ar: {
+          q: "1. حسب المحاضرة، يُصنف المولود بأنه خديج (Preterm) إذا وُلد قبل:",
+          options: ["37 أسبوعاً من الحمل", "38 أسبوعاً من الحمل", "40 أسبوعاً من الحمل", "42 أسبوعاً من الحمل"],
+          ans: 1,
+          exp: "وفقاً لتصنيف المحاضرة: الخديج (Preterm) قبل 38 أسبوعاً، المكتمل (Term) بين 38 و42 أسبوعاً، والمتأخر (Post-term) بعد 42 أسبوعاً."
+        }
+      },
+      {
+        en: {
+          q: "2. Hypothermia in a neonate is defined as an axillary body temperature below:",
+          options: ["35.0°C", "36.3°C", "37.0°C", "36.8°C"],
+          ans: 1,
+          exp: "Hypothermia occurs when axillary body temperature falls below 36.3°C."
+        },
+        ar: {
+          q: "2. يُعرّف انخفاض حرارة الجسم (Hypothermia) لدى المولود بانخفاض الحرارة الإبطية عن:",
+          options: ["35.0 درجة مئوية", "36.3 درجة مئوية", "37.0 درجة مئوية", "36.8 درجة مئوية"],
+          ans: 1,
+          exp: "يحدث انخفاض الحرارة عندما تقل درجة حرارة الجسم الإبطية عن 36.3 درجة مئوية."
+        }
+      },
+      {
+        en: {
+          q: "3. Which feature differentiates Pathological Jaundice from Physiological Jaundice?",
+          options: [
+            "Appears after the 3rd day of life",
+            "Daily rise of serum bilirubin is less than 5 mg/dl",
+            "Appears within the first 24 hours after birth and may lead to Kernicterus",
+            "Requires no medical treatment"
+          ],
+          ans: 2,
+          exp: "Pathological jaundice appears within the 1st day (24 hours), exceeds physiological levels, and can cause Kernicterus."
+        },
+        ar: {
+          q: "3. أي مما يلي يميز اليرقان المرضي (Pathological) عن اليرقان الفسيولوجي؟",
+          options: [
+            "يظهر بعد اليوم الثالث من العمر",
+            "الزيادة اليومية للبيليروبين أقل من 5 مجم/ديسيلتر",
+            "يظهر خلال أول 24 ساعة بعد الولادة وقد يؤدي لليرقان النووي",
+            "لا يتطلب أي علاج طبي"
+          ],
+          ans: 2,
+          exp: "اليرقان المرضي يظهر خلال اليوم الأول (24 ساعة) بعد الولادة، ويتطلب علاجاً عاجلاً لمنع اليرقان النووي (Kernicterus)."
+        }
+      },
+      {
+        en: {
+          q: "4. What is the immediate IV treatment for neonatal hypoglycemia?",
+          options: [
+            "200 mg/kg glucose (2 cc/kg of 10% dextrose) over 5 minutes",
+            "50 ml of 50% dextrose rapid push",
+            "Keep NPO for 4 hours",
+            "Oral plain water only"
+          ],
+          ans: 0,
+          exp: "Newborns with hypoglycemia (<40 mg/dl term, <30 mg/dl preterm) receive 200 mg/kg glucose or 2 cc/kg of 10% dextrose over 5 minutes."
+        },
+        ar: {
+          q: "4. ما هو العلاج الوريدي الفوري لنقص سكر الدم لدى حديثي الولادة؟",
+          options: [
+            "200 مجم/كجم جلوكوز (2 مل/كجم من دكستروز 10%) خلال 5 دقائق",
+            "50 مل من دكستروز 50% دفعة سريعة",
+            "تصويم الطفل لمدة 4 ساعات",
+            "ماء عادي عن طريق الفم فقط"
+          ],
+          ans: 0,
+          exp: "يُعطى المولود المصاب بنقص سكر الدم 200 مجم/كجم جلوكوز أو 2 مل/كجم من محلول دكستروز 10% خلال 5 دقائق."
+        }
+      },
+      {
+        en: {
+          q: "5. In Idiopathic Respiratory Distress Syndrome (IRDS), tachypnea reaches up to:",
+          options: ["30 to 40 breaths/min", "40 to 60 breaths/min", "80 to 120 breaths/min", "15 to 20 breaths/min"],
+          ans: 2,
+          exp: "IRDS presents with severe tachypnea (80–120 breaths/min), grunting, retractions, nasal flaring, and cyanosis; nipple and gavage feeding are contraindicated."
+        },
+        ar: {
+          q: "5. في متلازمة الضائقة التنفسية (IRDS)، يصل تسارع التنفس (Tachypnea) إلى:",
+          options: ["30 إلى 40 نفس/دقيقة", "40 إلى 60 نفس/دقيقة", "80 إلى 120 نفس/دقيقة", "15 إلى 20 نفس/دقيقة"],
+          ans: 2,
+          exp: "يصل معدل التنفس في متلازمة الضائقة التنفسية إلى 80–120 نفس/دقيقة مع شخير وانسحاب تحت القص، وتُمنع التغذية بالحلمة أو الأنبوب."
+        }
+      }
+    ];
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'en' ? 'ar' : 'en';
+      document.documentElement.lang = currentLang;
+      document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+      document.getElementById('langBtnText').textContent = currentLang === 'en' ? 'العربية' : 'English';
+      renderAll();
+    }
+
+    function renderAll() {
+      const dict = i18n[currentLang];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) el.innerHTML = dict[key];
+      });
+
+      renderFactors();
+      updateClassifier();
+      renderNursingTabs();
+      selectCondition(currentCondition);
+      renderQuiz();
+    }
+
+    function switchFactor(type) {
+      currentFactor = type;
+      const btnM = document.getElementById('btnFactorMaternal');
+      const btnN = document.getElementById('btnFactorNeonatal');
+      if (type === 'maternal') {
+        btnM.className = "px-3 py-1.5 rounded-md text-xs font-semibold tab-active transition";
+        btnN.className = "px-3 py-1.5 rounded-md text-xs font-semibold text-slate-600 transition";
+      } else {
+        btnN.className = "px-3 py-1.5 rounded-md text-xs font-semibold tab-active transition";
+        btnM.className = "px-3 py-1.5 rounded-md text-xs font-semibold text-slate-600 transition";
+      }
+      renderFactors();
+    }
+
+    function renderFactors() {
+      const dict = i18n[currentLang];
+      const list = currentFactor === 'maternal' ? dict.maternalList : dict.neonatalList;
+      const ul = document.getElementById('factorsList');
+      ul.innerHTML = list.map(item => `
+        <li class="p-3 rounded-xl bg-slate-50 border border-slate-200 font-medium">${item}</li>
+      `).join('');
+    }
+
+    function updateClassifier() {
+      const dict = i18n[currentLang];
+      const ga = parseInt(document.getElementById('gaSlider').value, 10);
+      const wt = parseInt(document.getElementById('wtSlider').value, 10);
+      const perc = parseInt(document.getElementById('percSlider').value, 10);
+
+      document.getElementById('gaValDisplay').textContent = currentLang === 'en' ? `${ga} wks` : `${ga} أسبوع`;
+      document.getElementById('wtValDisplay').textContent = currentLang === 'en' ? `${wt} gm` : `${wt} جم`;
+      document.getElementById('percValDisplay').textContent = `${perc}%`;
+
+      let gaRes = dict.gaTerm;
+      const postWarn = document.getElementById('postTermWarning');
+      if (ga < 38) {
+        gaRes = dict.gaPreterm;
+        postWarn.classList.add('hidden');
+      } else if (ga > 42) {
+        gaRes = dict.gaPost;
+        postWarn.classList.remove('hidden');
+        postWarn.textContent = dict.postTermAlert;
+      } else {
+        postWarn.classList.add('hidden');
+      }
+
+      let wtRes = dict.wtNormal;
+      if (wt < 1000) wtRes = dict.wtELBW;
+      else if (wt < 1500) wtRes = dict.wtVLBW;
+      else if (wt < 2500) wtRes = dict.wtLBW;
+
+      let chartRes = dict.chartAGA;
+      if (perc < 10) chartRes = dict.chartSGA;
+      else if (perc > 90) chartRes = dict.chartLGA;
+
+      document.getElementById('resGAText').textContent = gaRes;
+      document.getElementById('resWTText').textContent = wtRes;
+      document.getElementById('resChartText').textContent = chartRes;
+    }
+
+    function renderNursingTabs() {
+      const tabsContainer = document.getElementById('nursingTabs');
+      tabsContainer.innerHTML = nursingPillars.map((pillar, idx) => `
+        <button onclick="selectNursingTab(${idx})" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition ${idx === currentNursingIdx ? 'tab-active' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">
+          ${pillar[currentLang].title}
+        </button>
+      `).join('');
+
+      const activeData = nursingPillars[currentNursingIdx][currentLang];
+      document.getElementById('nursingContentBox').innerHTML = `
+        <h3 class="font-bold text-lg text-slate-900 mb-3">${activeData.title}</h3>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-sm text-slate-700">
+          ${activeData.items.map(item => `<li class="bg-white p-3 rounded-lg border border-slate-200 shadow-2xs">• ${item}</li>`).join('')}
+        </ul>
+      `;
+    }
+
+    function selectNursingTab(idx) {
+      currentNursingIdx = idx;
+      renderNursingTabs();
+    }
+
+    function selectCondition(condKey) {
+      currentCondition = condKey;
+      ['hypothermia', 'jaundice', 'hypoglycemia', 'irds'].forEach(k => {
+        const btn = document.getElementById('condBtn_' + k);
+        if (k === condKey) {
+          btn.className = "p-4 rounded-xl border border-sky-600 text-left rtl:text-right font-bold transition tab-active";
+        } else {
+          btn.className = "p-4 rounded-xl border border-slate-200 bg-white text-slate-800 text-left rtl:text-right font-bold transition hover:border-sky-300";
+        }
+      });
+      document.getElementById('conditionDetailContainer').innerHTML = conditionsData[condKey][currentLang];
+    }
+
+    function calcDextrose() {
+      const wtInput = document.getElementById('dextroseWeightInput');
+      if (!wtInput) return;
+      const wt = parseFloat(wtInput.value) || 0;
+      const ml = (wt * 2).toFixed(1);
+      const mg = Math.round(wt * 200);
+      const resEl = document.getElementById('dextroseResult');
+      if (currentLang === 'en') {
+        resEl.textContent = `Bolus: ${ml} ml of 10% Dextrose (${mg} mg glucose) over 5 min`;
+      } else {
+        resEl.textContent = `الجرعة: ${ml} مل من دكستروز 10% (${mg} مجم جلوكوز) خلال 5 دقائق`;
+      }
+    }
+
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = quizQuestions.map((qObj, qIdx) => {
+        const item = qObj[currentLang];
+        return `
+          <div class="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+            <p class="font-bold text-slate-900 text-sm sm:text-base">${item.q}</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              ${item.options.map((opt, oIdx) => `
+                <button onclick="checkQuizAnswer(${qIdx},${oIdx})" id="qBtn_${qIdx}_${oIdx}" class="p-3 rounded-lg bg-white border border-slate-200 text-left rtl:text-right text-xs sm:text-sm font-medium hover:border-sky-400 transition">
+                  ${opt}
+                </button>
+              `).join('')}
+            </div>
+            <div id="qExp_${qIdx}" class="hidden p-3 rounded-lg text-xs font-medium"></div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function checkQuizAnswer(qIdx, oIdx) {
+      const item = quizQuestions[qIdx][currentLang];
+      const expEl = document.getElementById(`qExp_${qIdx}`);
+      item.options.forEach((_, idx) => {
+        const btn = document.getElementById(`qBtn_${qIdx}_${idx}`);
+        btn.disabled = true;
+        if (idx === item.ans) {
+          btn.className = "p-3 rounded-lg bg-emerald-600 text-white border border-emerald-600 text-left rtl:text-right text-xs sm:text-sm font-bold";
+        } else if (idx === oIdx) {
+          btn.className = "p-3 rounded-lg bg-rose-600 text-white border border-rose-600 text-left rtl:text-right text-xs sm:text-sm font-bold";
+        }
+      });
+      expEl.classList.remove('hidden');
+      if (oIdx === item.ans) {
+        expEl.className = "p-3 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-900 border border-emerald-200";
+        expEl.innerHTML = `✅ ${item.exp}`;
+      } else {
+        expEl.className = "p-3 rounded-lg text-xs font-medium bg-rose-50 text-rose-900 border border-rose-200";
+        expEl.innerHTML = `❌ ${item.exp}`;
+      }
+    }
+
+    // Initialize in English on load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderAll();
+    });
+  </script>
+</body>
+</html>
